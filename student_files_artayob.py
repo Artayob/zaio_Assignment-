@@ -9,7 +9,7 @@ class DataLoader:
 
     def load_content(self): # this function loads and raises the exceptions of the file 
         try:
-            df = pd.read_csv(self.filepath)
+            df = pd.read_csv(self.filepath, delimiter=';')
             return df
         except Exception as e:
             raise FileNotFoundError(f"Error reading file: {e}")
@@ -36,12 +36,56 @@ class DataCleaner:
         return duplicates     
     
     def validate_ranges(self):
+        if 'study_hours_per_day' in self.data.columns:
+            invalid = self.data[(self.data['study_hours_per_day'] < 0) | (self.data['study_hours_per_day'] > 24)]
+            if not invalid.empty:
+                print("Invalid study_hours values found:")
+                print(invalid[['study_hours_per_day']])
+            else:
+                print("All study_hours values are within the valid range.")
+        else:
+            print("Column 'study_hours_per_day' not found, skipping range validation.")
+
+
+class StudentAnalyzer:
+
+    def __init__(self,data):
+        self.data = data 
+
+    def mean_median(self):
+        if 'mental_health_rating' in self.data.columns and 'study_hours_per_day' in self.data.columns:
+            group = self.data.groupby('mental_health_rating')['study_hours_per_day']
+            result = group.agg(['mean', 'median'])
+            print(result)
+            return result
+        else:
+            print("Required columns not found.")
+            return None
         
+    def correlation(self):
+        correlation = self.data['sleep_hours'].corr(self.data['exam_score'])
+        print("Correlation between sleep hours and exams scores are: ", correlation)
+        return correlation
+    
+    def outliers(self):
+        Q1 = self.data['social_media_hours'].quantile(0.25)
+        Q3 = self.data['social_media_hours'].quantile(0.75)
+        IQR = Q3 - Q1
+        lower_bound = Q1 - 1.5 * IQR
+        upper_bound = Q3 + 1.5 * IQR
+        outliers = self.data[(self.data['social_media_hours'] < lower_bound) | (self.data['social_media_hours'] > upper_bound)]
+        print("The out lier values are:", outliers)
+        return outliers
 
 loader = DataLoader("C:/Users/sakit/Desktop/zaio_Assignment-/student_habits_performance.csv")
 content = loader.load_content()
-print(content)        
+print(content) 
 
+analyzer = StudentAnalyzer(content)
 cleaner = DataCleaner(content)
 cleaner.Missing_values()
 cleaner.check_duplicates()
+cleaner.validate_ranges()
+analyzer.mean_median()
+analyzer.correlation()
+analyzer.outliers()
