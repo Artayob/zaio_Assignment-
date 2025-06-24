@@ -2,6 +2,9 @@ import pandas as pd
 import os
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
 
 class DataLoader:
     def __init__(self, filepath):
@@ -87,7 +90,7 @@ class Visualizer:
     def Histogram(self):
         plt.hist(self.data["study_hours_per_day"], bins= 10, color= 'Orange', edgecolor="black")
         plt.xlabel("Study Hours")
-        plt.ylabel("How many days")
+        plt.ylabel("How many days") 
         plt.title("Histogram showing students study hours per day")
         plt.grid(False)
         plt.show()
@@ -107,6 +110,38 @@ class Visualizer:
         plt.xlabel("Diet Quality")
         plt.ylabel("Final Score")
         plt.grid(True)
+        plt.show() 
+
+class Model_learn:
+    def __init__(self,data):
+        self.data = data
+
+    def train(self):
+        # Encode 'diet_quality' as numbers
+        if 'diet_quality' in self.data.columns:
+            encoder = LabelEncoder()
+            self.data['diet_quality_encoded'] = encoder.fit_transform(self.data['diet_quality'])
+        else:
+            raise ValueError("diet_quality column not found in dataset.")
+        X = self.data[['study_hours_per_day', 'sleep_hours', 'diet_quality_encoded']]  # Independent variables
+        y = self.data['exam_score']  # Target variable
+
+        # Split data
+        x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+        # Train model
+        model = LinearRegression()
+        model.fit(x_train, y_train)
+
+        # Predict and evaluate
+        y_pred = model.predict(x_test)
+
+        # Visualize results
+        plt.scatter(y_test, y_pred, color='green')
+        plt.xlabel("Actual Scores")
+        plt.ylabel("Predicted Scores")
+        plt.title("Actual vs Predicted Scores")
+        plt.grid(True)
         plt.show()
 
 
@@ -117,6 +152,7 @@ print(content)
 analyzer = StudentAnalyzer(content)
 cleaner = DataCleaner(content)
 visualization = Visualizer(content)
+machine = Model_learn(content)
 cleaner.Missing_values()
 cleaner.check_duplicates()
 cleaner.validate_ranges()
@@ -126,3 +162,4 @@ analyzer.outliers()
 visualization.Histogram()
 visualization.ScatterPlot()
 visualization.BoxPlot()
+machine.train()
