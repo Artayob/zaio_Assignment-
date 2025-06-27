@@ -5,6 +5,7 @@ import seaborn as sns
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
+import pickle
 
 class DataLoader:
     def __init__(self, filepath):
@@ -112,37 +113,39 @@ class Visualizer:
         plt.grid(True)
         plt.show() 
 
-class Model_learn:
-    def __init__(self,data):
+class ScorePredictor:
+    def __init__(self, data):
         self.data = data
+    
+    def Model(self):
+        try:            
+            for col in ['diet_quality', 'mental_health_rating']:
+                if self.data[col].dtype == 'object':
+                    encoder = LabelEncoder()
+                    self.data[col] = encoder.fit_transform(self.data[col])
+            
+            
+            self.model = LinearRegression()
+            X = self.data[['study_hours_per_day', 'diet_quality', 'sleep_hours', 'mental_health_rating']]
+            y = self.data['exam_score']
 
-    def train(self):
-        # Encode 'diet_quality' as numbers
-        if 'diet_quality' in self.data.columns:
-            encoder = LabelEncoder()
-            self.data['diet_quality_encoded'] = encoder.fit_transform(self.data['diet_quality'])
-        else:
-            raise ValueError("diet_quality column not found in dataset.")
-        X = self.data[['study_hours_per_day', 'sleep_hours', 'diet_quality_encoded']]  # Independent variables
-        y = self.data['exam_score']  # Target variable
+            self.model.fit(X, y)
 
-        # Split data
-        x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+            y_pred = self.model.predict(X)[0]
+            print(f"The predicted scores are: {y_pred: 2f}")
 
-        # Train model
-        model = LinearRegression()
-        model.fit(x_train, y_train)
+        except Exception as e:
+            print(f"Error: {e}")
 
-        # Predict and evaluate
-        y_pred = model.predict(x_test)
+    def save_model(self):
+        if self.model is None:
+            print("No model to save. Train the model first.")
+            return
+        filename = 'linear_regression_model.pkl'
+        with open(filename, 'wb') as file:
+            pickle.dump(self.model, file)
+        print(f"Model saved to {filename}")
 
-        # Visualize results
-        plt.scatter(y_test, y_pred, color='green')
-        plt.xlabel("Actual Scores")
-        plt.ylabel("Predicted Scores")
-        plt.title("Actual vs Predicted Scores")
-        plt.grid(True)
-        plt.show()
 
 
 loader = DataLoader("C:/Users/sakit/Desktop/zaio_Assignment-/student_habits_performance.csv")
@@ -152,7 +155,7 @@ print(content)
 analyzer = StudentAnalyzer(content)
 cleaner = DataCleaner(content)
 visualization = Visualizer(content)
-machine = Model_learn(content)
+machine = ScorePredictor(content)   
 cleaner.Missing_values()
 cleaner.check_duplicates()
 cleaner.validate_ranges()
@@ -162,4 +165,5 @@ analyzer.outliers()
 visualization.Histogram()
 visualization.ScatterPlot()
 visualization.BoxPlot()
-machine.train()
+machine.Model()
+machine.save_model()
