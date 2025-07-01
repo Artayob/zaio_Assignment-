@@ -1,0 +1,14 @@
+Student Performance Summary Report
+This report includes basic statistics on the dataset.
+
+Summary Statistics:
+
+           age  study_hours_per_day  social_media_hours  netflix_hours  attendance_percentage  sleep_hours  diet_quality  exercise_frequency  mental_health_rating  exam_score
+count  1000.00              1000.00             1000.00        1000.00                1000.00      1000.00       1000.00             1000.00               1000.00     1000.00
+mean     20.50                 3.55                2.51           1.82                  84.13         6.47          0.75                3.04                  5.44       69.60
+std       2.31                 1.47                1.17           1.08                   9.40         1.23          0.75                2.03                  2.85       16.89
+min      17.00                 0.00                0.00           0.00                  56.00         3.20          0.00                0.00                  1.00       18.40
+25%      18.75                 2.60                1.70           1.00                  78.00         5.60          0.00                1.00                  3.00       58.48
+50%      20.00                 3.50                2.50           1.80                  84.40         6.50          1.00                3.00                  5.00       70.50
+75%      23.00                 4.50                3.30           2.52                  91.02         7.30          1.00                5.00                  8.00       81.32
+max      24.00                 8.30                7.20           5.40                 100.00        10.00          2.00                6.00                 10.00      100.00

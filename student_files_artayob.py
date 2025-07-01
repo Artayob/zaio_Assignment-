@@ -131,7 +131,7 @@ class ScorePredictor:
 
             self.model.fit(X, y)
 
-            y_pred = self.model.predict(X)[0]
+            y_pred = self.model.predict(X)[3]
             print(f"The predicted scores are: {y_pred: 2f}")
 
         except Exception as e:
