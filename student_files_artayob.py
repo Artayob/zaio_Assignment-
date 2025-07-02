@@ -3,11 +3,10 @@ import os
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 import pickle
 
-class DataLoader:
+class DataLoader: # This is is data Loader class which loads and checks the file path and existance of the file 
     def __init__(self, filepath):
         self.filepath = filepath
         if not os.path.exists(self.filepath):
@@ -21,7 +20,7 @@ class DataLoader:
             raise FileNotFoundError(f"Error reading file: {e}")
 
         
-class DataCleaner:
+class DataCleaner:           # Data Cleaner class cleans the data and checks dor missing values and or duplicates 
     def __init__(self,data):
         self.data = data
 
@@ -53,8 +52,7 @@ class DataCleaner:
             print("Column 'study_hours_per_day' not found, skipping range validation.")
 
 
-class StudentAnalyzer:
-
+class StudentAnalyzer:   # This student analyser class analyses the data 
     def __init__(self,data):
         self.data = data 
 
@@ -84,7 +82,7 @@ class StudentAnalyzer:
         return outliers
 
 
-class Visualizer:
+class Visualizer:    # The visualizer class helps us to see the data in a visual form 
     def __init__(self, data):
         self.data = data
 
@@ -113,7 +111,7 @@ class Visualizer:
         plt.grid(True)
         plt.show() 
 
-class ScorePredictor:
+class ScorePredictor: # Machine learning class which uses inputs to predict the test/Exam Scores
     def __init__(self, data):
         self.data = data
     
@@ -137,7 +135,7 @@ class ScorePredictor:
         except Exception as e:
             print(f"Error: {e}")
 
-    def save_model(self):
+    def save_model(self):    # Saving the model using pickle
         if self.model is None:
             print("No model to save. Train the model first.")
             return
@@ -147,11 +145,11 @@ class ScorePredictor:
         print(f"Model saved to {filename}")
 
 
-
 loader = DataLoader("C:/Users/sakit/Desktop/zaio_Assignment-/student_habits_performance.csv")
 content = loader.load_content()
 print(content) 
 
+# This Calls the classes and functions to perform the operations 
 analyzer = StudentAnalyzer(content)
 cleaner = DataCleaner(content)
 visualization = Visualizer(content)
